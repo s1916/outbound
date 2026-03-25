@@ -1,4 +1,4 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date, datetime
 
@@ -17,7 +17,6 @@ class ParticipantOut(ParticipantBase):
 
 class AttachmentBase(BaseModel):
     file_name: str
-    file_path: str
     file_type: str
     file_size: int
 

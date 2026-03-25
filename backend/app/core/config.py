@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     SSO_AUTHORIZATION_URL: Optional[str] = None
     SSO_TOKEN_URL: Optional[str] = None
     SSO_USERINFO_URL: Optional[str] = None
+    SSO_REDIRECT_URI: Optional[str] = None
+    SSO_SCOPE: str = "openid profile email"
+    SSO_USERINFO_EMPLOYEE_ID_FIELD: str = "employee_id"
+    SSO_USERINFO_NAME_FIELD: str = "name"
+    SSO_USERINFO_DEPARTMENT_FIELD: str = "department"
+    FRONTEND_SSO_CALLBACK_URL: str = "http://localhost:5173/login"
+    ENABLE_MOCK_SSO: bool = False
 
     # Uploads
     UPLOAD_DIR: str = "./uploads"

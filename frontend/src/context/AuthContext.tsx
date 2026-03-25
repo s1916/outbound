@@ -11,7 +11,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (employee_id: string) => Promise<void>;
+  loginMock: (employee_id: string) => Promise<void>;
+  loginWithToken: (accessToken: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -66,20 +67,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => { isMounted = false; }
   }, [token]);
 
-  const login = async (employee_id: string) => {
+  const loginWithToken = async (accessToken: string) => {
+    localStorage.setItem('token', accessToken);
+    setToken(accessToken);
+    const userResponse = await axios.get('/api/v1/auth/me', {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    setUser(userResponse.data);
+  };
+
+  const loginMock = async (employee_id: string) => {
     try {
-      // Mock SSO login
-      const response = await axios.post(`/api/v1/auth/login/sso?employee_id=${employee_id}`);
+      const response = await axios.post(`/api/v1/auth/login/mock?employee_id=${employee_id}`);
       const newToken = response.data.access_token;
-      
-      localStorage.setItem('token', newToken);
-      setToken(newToken);
-      
-      // Get user info immediately
-      const userResponse = await axios.get('/api/v1/auth/me', {
-        headers: { Authorization: `Bearer ${newToken}` }
-      });
-      setUser(userResponse.data);
+      await loginWithToken(newToken);
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -93,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, loginMock, loginWithToken, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
